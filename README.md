@@ -16,12 +16,12 @@ Firstly, check that a Docker, a MQTT broker and a MTConnect Agent are correctly 
     --restart always -t -i goMTConnect2MQTT:latest
 ```
 That's all. After that you should subscribe to MQTT topic (such as factory/sensor/YOUR_CNC_NAME/config).
-Structore of MQTT topic will be in JSON.
+Structure of MQTT topic will be in JSON.
 Example of the topic:
 ```json
     {"Name":"YOUR_CNC_NAME","ControllerMode":"AUTOMATIC","Program":"60.9000","ProgramComment":"UNAVAILABLE","Execution":"ACTIVE","LoadS1":0,"PartCount":"12893","Time":"2022-03-22T10:31:28.3204848Z"}
 ```
 ## Limitations
-This project does not convert all the data that can be obtained from MTConnect. In particular, coordinates are not transmitted. This is done because this data is rarely used in real projects to track the condition of CNC. 
+This project does not convert all the data that can be obtained from MTConnect. In particular, coordinates are not transmitted. This is done because this data is rarely used in real projects to track the status of CNC. 
 
 
