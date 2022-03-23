@@ -82,7 +82,7 @@ func StartMqttClient(cfg environment.Config) {
 }
 
 func mqttSender(client MQTT.Client, cfg environment.Config) {
-	//Создаем срез станков, где будем хранить старую информацию о них, чтобы не отпраялть много раз MQTT сообщение
+	//Create a new slice, where we store previous data, to compare it with new information
 	var devicesInformationOld []CollectedCNCData
 
 	url := "http://" + cfg.MTCONNECT_HOST + "/current"
@@ -99,16 +99,16 @@ func mqttSender(client MQTT.Client, cfg environment.Config) {
 				time.Sleep(1 * time.Second)
 				continue
 			}
-			// Если нет значений, то нет смысла выполнять дальше код
+			// If we get no information, lets start loop again
 			if len(res.DeviceStream) == 0 {
 				time.Sleep(1 * time.Second)
 				continue
 			}
 
-			//Создаем срез станков, где будем хранить текущую информацию о них
+			//Create a new slice, where we store new data
 			var devicesInformation []CollectedCNCData
 
-			//Вытягиваем информацию по каждому станку из XML и сохраняем ее в срезе
+			//Decode XML
 			for i, _ := range res.DeviceStream {
 				var device CollectedCNCData
 
@@ -152,7 +152,7 @@ func mqttSender(client MQTT.Client, cfg environment.Config) {
 					}
 				}
 
-				//Сохраняем информацию в общем срезе
+				//
 				if len(devicesInformation) == 0 {
 					devicesInformation = append(devicesInformation, device)
 				} else {
@@ -167,25 +167,24 @@ func mqttSender(client MQTT.Client, cfg environment.Config) {
 					}
 				}
 			}
+
 			//MQTT Sender
 			for i, _ := range devicesInformation {
-				//Проверяем есть ли такое же состояние в прошлом
-				deviceInformationToSend := devicesInformation[i]
+				//Check that we will send a new data
 				equalFlag := false
 				for m, _ := range devicesInformationOld {
-					if deviceInformationToSend == devicesInformationOld[m] {
+					if devicesInformation[i] == devicesInformationOld[m] {
 						equalFlag = true
 						break
 					}
 				}
 				if equalFlag == false {
-					deviceInformationToSend.Time = time.Now()
-					message, err := json.Marshal(deviceInformationToSend)
+					devicesInformation[i].Time = time.Now()
+					message, err := json.Marshal(devicesInformation[i])
 					if err != nil {
-						fmt.Println("Ошибка MTConnect")
 						fmt.Println(err)
 					} else {
-						sensorTopic := "factory/sensor/" + deviceInformationToSend.Name + "/config"
+						sensorTopic := "factory/sensor/" + devicesInformation[i].Name + "/config"
 						client.Publish(sensorTopic, 0, true, message)
 					}
 				}

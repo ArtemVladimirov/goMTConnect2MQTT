@@ -1,6 +1,6 @@
 # goMTConnect2MQTT
 Open source project that converts XML data from MTConnect Agent to MQTT. You can install this converter by one string using Docker to track a lot of CNC from different manufactures, such as Fanuc, Okuma, Haas.
-The project is written in pure Go and the weight of the docker container is only ~8MB
+The project is written in pure Go and the weight of the docker container is only <8MB
 
 ## Requirements
 Firstly, check that a Docker, a MQTT broker and a MTConnect Agent are correctly installed.
@@ -13,7 +13,7 @@ Firstly, check that a Docker, a MQTT broker and a MTConnect Agent are correctly 
     -e MQTT_USERNAME='user' \
     -e MQTT_PASSWORD='password' \
     -e MTCONNECT_HOST='192.168.1.2:5001' \
-    --restart always -t -i goMTConnect2MQTT:latest
+    --restart always -t -i artvladimirov/gomtconnect2mqtt:latest
 ```
 That's all. After that you should subscribe to MQTT topic (such as factory/sensor/YOUR_CNC_NAME/config).
 Structure of MQTT topic will be in JSON.
